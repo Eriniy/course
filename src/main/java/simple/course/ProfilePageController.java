@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -19,8 +20,13 @@ public class ProfilePageController extends Connect{
     private String actualLogin;
     private int actualId;
 
+    private int countPhrase;
+
     @FXML
     private Label actual_login;
+
+    @FXML
+    private Label counter;
 
     @FXML
     private Button addLawButton;
@@ -118,12 +124,57 @@ public class ProfilePageController extends Connect{
         }
     }
 
+    private void getCounterValue() throws Exception{ // способ 1.2
+        String countValue = "SELECT COUNT(*) as count FROM Phrases WHERE author_id='" + actualId + "'";
+        countPhrase = getValue(countValue, "count");
+        counter.setText(Integer.toString(countPhrase));
+
+    }
+
+    private int getValue(String query, String column) throws Exception{ // способ 1.1
+        Connection conn = getConnect();
+        Statement st = conn.createStatement();
+        int count = 0;
+
+        ResultSet result = st.executeQuery(query);
+        if (result.next())
+            count = result.getInt(column);
+
+        return count;
+    }
+
+    private void getCounterValue_2(){
+        try {
+            Connection conn = getConnect();
+            Statement st = conn.createStatement();
+            String query = "SELECT * FROM Phrases WHERE author_id ='" + actualId + "'";
+            int freeCount = 0;
+            ResultSet res = st.executeQuery(query);
+
+            while(res.next()){
+                freeCount++;
+            }
+            countPhrase = freeCount;
+            counter.setText(Integer.toString(countPhrase));
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
     @FXML
     private void initialize() {
         actualLogin = User.actualLogin;
         actualId = User.actualId;
 
         actual_login.setText(actualLogin);
+        try {
+            getCounterValue(); // 1 способ
+//            getCounterValue_2(); // 2 способ
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

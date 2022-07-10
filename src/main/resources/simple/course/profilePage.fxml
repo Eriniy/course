@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="510.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simple.course.ProfilePageController">
    <children>
       <Label layoutX="384.0" layoutY="24.0" prefHeight="59.0" prefWidth="131.0" text="PROFILE" textAlignment="CENTER">
@@ -38,6 +37,19 @@
             <Font size="15.0" />
          </font>
       </Button>
-      <Label fx:id="actual_login" layoutX="374.0" layoutY="95.0" prefHeight="45.0" prefWidth="151.0" text="Label" />
+      <Label fx:id="actual_login" layoutX="393.0" layoutY="83.0" prefHeight="51.0" prefWidth="113.0" text="Label" textAlignment="CENTER">
+         <font>
+            <Font size="35.0" />
+         </font></Label>
+      <Label layoutX="336.0" layoutY="139.0" prefHeight="51.0" prefWidth="113.0" text="Counter:">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Label>
+      <Label fx:id="counter" layoutX="456.0" layoutY="147.0" prefHeight="39.0" prefWidth="51.0" text="Label">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
