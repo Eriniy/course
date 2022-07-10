@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollBar?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="510.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simple.course.MainPageController">
+    <children>
+        <TableView fx:id="tablePhrases" layoutX="14.0" layoutY="98.0" prefHeight="388.0" prefWidth="800.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="98.0">
+            <columns>
+                <TableColumn fx:id="idColumn" maxWidth="73.0" prefWidth="73.0" text="id" />
+                <TableColumn fx:id="textColumn" maxWidth="260.0" prefWidth="260.0" text="text" />
+                <TableColumn fx:id="dateColumn" maxWidth="150.0" prefWidth="150.0" text="date" />
+                <TableColumn fx:id="teacherColumn" maxWidth="150.0" minWidth="0.0" prefWidth="150.0" text="teacher" />
+            <TableColumn fx:id="lessonColumn" maxWidth="150.0" prefWidth="150.0" text="lesson" />
+            <TableColumn fx:id="authorIdColumn" maxWidth="75.0" prefWidth="75.0" text="autor" />
+            </columns>
+        </TableView>
+        <Button fx:id="signUpButton" layoutX="734.0" layoutY="26.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="144.0" text="SignUp" />
+        <Button fx:id="logInButton" layoutX="574.0" layoutY="26.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="30.0" prefWidth="144.0" text="LogIn" />
+      <ScrollBar fx:id="scroll" layoutX="870.0" layoutY="103.0" orientation="VERTICAL" prefHeight="382.0" prefWidth="16.0" />
+    </children>
+</AnchorPane>

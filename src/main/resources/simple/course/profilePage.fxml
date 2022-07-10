@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="510.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simple.course.ProfilePageController">
+   <children>
+      <Label layoutX="384.0" layoutY="24.0" prefHeight="59.0" prefWidth="131.0" text="PROFILE" textAlignment="CENTER">
+         <font>
+            <Font size="35.0" />
+         </font>
+      </Label>
+      <TextField fx:id="tfName" layoutX="46.0" layoutY="165.0" prefHeight="35.0" prefWidth="229.0" promptText="name" />
+      <Label layoutX="71.0" layoutY="83.0" prefHeight="35.0" prefWidth="179.0" text="Редактировать профиль" textAlignment="CENTER" AnchorPane.leftAnchor="71.0">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="620.0" layoutY="83.0" prefHeight="35.0" prefWidth="229.0" text="Редактировать права доступа" textAlignment="CENTER" AnchorPane.rightAnchor="50.66666666666663">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <TextField fx:id="tfIdPhrase" layoutX="620.0" layoutY="165.0" prefHeight="35.0" prefWidth="229.0" promptText="id phrase" />
+      <TextField fx:id="tfLogin" layoutX="46.0" layoutY="266.0" prefHeight="35.0" prefWidth="229.0" promptText="login" />
+      <TextField fx:id="tfPass" layoutX="46.0" layoutY="377.0" prefHeight="35.0" prefWidth="229.0" promptText="password" />
+      <Button fx:id="changeNameButton" layoutX="110.0" layoutY="212.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="25.0" prefWidth="102.0" text="Change name" />
+      <Button fx:id="changeLoginButton" layoutX="110.0" layoutY="315.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="25.0" prefWidth="102.0" text="Change login" />
+      <Button fx:id="changePasswordButton" layoutX="104.0" layoutY="431.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="25.0" prefWidth="113.0" text="Change password" />
+      <TextField fx:id="tfLoginNewUser" layoutX="620.0" layoutY="225.0" prefHeight="35.0" prefWidth="229.0" promptText="login new user" />
+      <Button fx:id="addLawButton" layoutX="684.0" layoutY="288.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="25.0" prefWidth="102.0" text="Add law" />
+      <Button fx:id="returnButton" layoutX="749.0" layoutY="426.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="35.0" prefWidth="123.0" text="Return">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Button>
+      <Label fx:id="actual_login" layoutX="374.0" layoutY="95.0" prefHeight="45.0" prefWidth="151.0" text="Label" />
+   </children>
+</AnchorPane>
