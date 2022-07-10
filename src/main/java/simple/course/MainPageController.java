@@ -126,6 +126,5 @@ public class MainPageController extends Connect{
     @FXML
     void initialize() {
         showPhrases();
-
     }
 }

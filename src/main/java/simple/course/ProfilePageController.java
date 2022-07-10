@@ -71,30 +71,33 @@ public class ProfilePageController extends Connect{
 
         else if (event.getSource() == changeNameButton){
             if(!tfName.equals("")){
-                updateUser("Users", "name", tfName);
+                updateUser("name", tfName);
             }
         }
 
         else if (event.getSource() == changeLoginButton){
             if(!tfLogin.equals("")) {
-                updateUser("Users", "login", tfLogin);
+                updateUser("login", tfLogin);
+                actualLogin = tfLogin.getText();
+                actual_login.setText(tfLogin.getText());
+                User.actualLogin = actualLogin;
+                tfLogin.clear();
             }
         }
 
         else if (event.getSource() == changePasswordButton){
             if(!tfName.equals("")){
-                updateUser("Users", "password", tfPass);
+                updateUser("password", tfPass);
             }
         }
 
         else if (event.getSource() == addLawButton){
             insertLaw();
         }
-        //ТУТ ОСТАЛИСЬ ПРАВА
     }
 
-    public void updateUser(String base, String column, TextField tf){
-        String query = "UPDATE " + base + " SET " + column + " = '" + tf.getText() + "' WHERE login = " + actual_login;
+    public void updateUser(String column, TextField tf){
+        String query = "UPDATE Users SET " + column + "='" + tf.getText() + "' WHERE login ='" + actualLogin + "'";
         executeQuery(query);
 
     }

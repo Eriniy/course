@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
+import javax.xml.stream.events.StartElement;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -68,8 +69,8 @@ public class TestTableController extends Connect{
     @FXML
     private TableColumn<Phrase, String> textColumn;
 
-    @FXML
-    private TextField tfAuthor_id;
+//    @FXML
+//    private TextField tfAuthor_id;
 
     @FXML
     private TextField tfDate;
@@ -86,8 +87,8 @@ public class TestTableController extends Connect{
     @FXML
     private TextField tfText;
 
-    @FXML
-    private TextArea tfTextArea;
+//    @FXML
+//    private TextArea tfTextArea;
 
     @FXML
     private Button updateButton;
@@ -96,14 +97,55 @@ public class TestTableController extends Connect{
     private Label actualUser;
 
     @FXML
-    void handleButtonAction(ActionEvent event) {
+    void handleButtonAction(ActionEvent event) throws Exception{
         if (event.getSource() == insertButton) {
             insertRecord();
+            tfLesson.clear();
+            tfTeacher.clear();
+            tfText.clear();
+            tfDate.clear();
+
         } else if (event.getSource() == updateButton) {
-            updateRecord();
+            String checkSuper = "SELECT superUser from Users where id ='" + actualId + "'";
+            String checkAuthor = "SELECT author_id from Phrases where id='" + actualId + "'";
+            String checkTableLaws = "SELECT user_id FROM Laws WHERE phrase_id ='" + tfId.getText() + "'";
+            String checkVerifier = "SELECT a.verifier_id FROM VerifierUsers as a where a.user_id IN (SELECT Phrases.author_id from Phrases where Phrases.id ='" + tfId.getText() + "')";
+
+            if (getValue(checkSuper, "superUser") == 1){
+                updateRecord();
+
+            } else if (getValue(checkAuthor, "author_id") == actualId) {
+                updateRecord();
+
+            } else if (getValue(checkTableLaws, "user_id") == actualId){
+                updateRecord();
+
+            } else if (checkVelifier(checkVerifier)){
+                updateRecord();
+
+            } else {
+                tfId.clear();
+                tfLesson.clear();
+                tfTeacher.clear();
+                tfText.clear();
+                tfDate.clear();
+            }
+
         } else if (event.getSource() == deleteButton) {
-            deleteRecord();
+            String checkSuper = "SELECT superUser from Users where id ='" + actualId + "'";
+            String checkAuthor = "SELECT author_id from Phrases where id='" + actualId + "'";
+            String checkVerifier = "SELECT a.verifier_id FROM VerifierUsers as a where a.user_id IN (SELECT Phrases.author_id from Phrases where Phrases.id ='" + tfId.getText() + "')";
+
+
+            if (getValue(checkSuper, "superUser") == 1) {
+                deleteRecord();
+            } else if (getValue(checkAuthor, "author_id") == actualId) {
+                deleteRecord();
+            }  else if (checkVelifier(checkVerifier)){
+                deleteRecord();
+            }
             tfId.clear();
+
         } else if (event.getSource() == profileButton){
             try {
                 profileButton.getScene().getWindow().hide(); // убирает прошлое окно
@@ -180,7 +222,7 @@ public class TestTableController extends Connect{
     }
 
     private void updateRecord() {
-        String query = "UPDATE Phrases SET text = '" + tfTeacher.getText() + "', date = '" + tfDate.getText() + "', teacher = '" + tfTeacher.getText() + "', lesson = '" + tfLesson.getText() + "' WHERE id = " + tfId.getText();
+        String query = "UPDATE Phrases SET text = '" + tfText.getText() + "', date = '" + tfDate.getText() + "', teacher = '" + tfTeacher.getText() + "', lesson = '" + tfLesson.getText() + "' WHERE id = " + tfId.getText();
         executeQuery(query);
         showPhrases();
     }
@@ -200,6 +242,35 @@ public class TestTableController extends Connect{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private int getValue(String query, String column) throws Exception{
+        Connection conn = getConnect();
+        Statement st = conn.createStatement();
+        int count = 0;
+
+        ResultSet result = st.executeQuery(query);
+        if (result.next())
+            count = result.getInt(column);
+
+
+        return count;
+    }
+
+    private boolean checkVelifier(String query) throws Exception{
+        Connection conn = getConnect();
+        Statement st = conn.createStatement();
+        ResultSet result = st.executeQuery(query);
+        int idUserControlled = 0;
+
+        while(result.next()){
+            idUserControlled = result.getInt("verifier_id");
+            if (idUserControlled == actualId)
+                return true;
+        }
+
+
+        return false;
     }
 
     @FXML
