@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ResourceBundle;
@@ -91,12 +92,13 @@ public class MainPageController extends Connect{
         ObservableList<Phrase> phraselist = FXCollections.observableArrayList();
         Connection conn = getConnect();
         String query = "SELECT * FROM Phrases";
-        Statement st;
+        PreparedStatement st;
         ResultSet rs;
 
         try {
-            st  = conn.createStatement();
-            rs = st.executeQuery(query);
+            st  = conn.prepareStatement(query);
+            rs = st.executeQuery()
+            ;
             Phrase phrase;
             while (rs.next()){
                 phrase = new Phrase(rs.getInt("id"), rs.getString("text"), rs.getString("date"), rs.getString("teacher"), rs.getString("lesson"), rs.getInt("author_id"));

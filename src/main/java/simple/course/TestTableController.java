@@ -13,10 +13,7 @@ import javafx.stage.Stage;
 
 import javax.xml.stream.events.StartElement;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -182,12 +179,12 @@ public class TestTableController extends Connect{
         ObservableList<Phrase> phraselist = FXCollections.observableArrayList();
         Connection conn = getConnect();
         String query = "SELECT * FROM Phrases";
-        Statement st;
+        PreparedStatement st;
         ResultSet rs;
 
         try {
-            st = conn.createStatement();
-            rs = st.executeQuery(query);
+            st = conn.prepareStatement(query);
+            rs = st.executeQuery();
             Phrase phrase;
             while (rs.next()) {
                 phrase = new Phrase(rs.getInt("id"), rs.getString("text"), rs.getString("date"), rs.getString("teacher"), rs.getString("lesson"), rs.getInt("author_id"));
@@ -215,9 +212,17 @@ public class TestTableController extends Connect{
     }
 
     private void insertRecord() {
-        String query = "INSERT INTO Phrases(text, date, teacher, lesson, author_id) " +
-                "VALUES ('" + tfText.getText() + "','" + tfDate.getText() + "','" + tfTeacher.getText() + "','" + tfLesson.getText() + "','" + actualId + "')";
-        executeQuery(query);
+        String insert = "INSERT INTO Phrases(text, date, teacher, lesson, author_id) VALUES (?,?,?,?,'" + actualId + "')";
+//        PreparedStatement pr =
+        try {
+            testik(insert);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+//        String query = "INSERT INTO Phrases(text, date, teacher, lesson, author_id) " +
+//                "VALUES ('" + tfText.getText() + "','" + tfDate.getText() + "','" + tfTeacher.getText() + "','" + tfLesson.getText() + "','" + actualId + "')";
+//        executeQuery(query);
         showPhrases();
     }
 
@@ -231,6 +236,18 @@ public class TestTableController extends Connect{
         String query = "DELETE FROM Phrases WHERE id =" + tfId.getText() + "";
         executeQuery(query);
         showPhrases();
+    }
+
+    private void testik(String in) throws SQLException{
+        Connection conn = getConnect();
+        PreparedStatement pr = conn.prepareStatement(in);
+        pr.setString(1, tfText.getText());
+        pr.setString(2, tfDate.getText());
+        pr.setString(3, tfTeacher.getText());
+        pr.setString(4, tfLesson.getText());
+
+        pr.executeUpdate();
+
     }
 
     private void executeQuery(String query) {
