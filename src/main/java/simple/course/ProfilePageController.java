@@ -5,10 +5,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.w3c.dom.Text;
 
 import java.sql.*;
 
@@ -73,59 +75,86 @@ public class ProfilePageController extends Connect{
         }
 
         else if (event.getSource() == changeNameButton){
-            if(!tfName.equals("")){
+            if(!tfName.getText().equals("")){
                 updateUser("name", tfName);
+            }
+            else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Не заполнено обязательное поле!");
+                alert.showAndWait();
             }
         }
 
         else if (event.getSource() == changeLoginButton){
-            if(!tfLogin.equals("")) {
+            if(!tfLogin.getText().equals("")) {
                 updateUser("login", tfLogin);
                 actualLogin = tfLogin.getText();
                 actual_login.setText(tfLogin.getText());
                 User.actualLogin = actualLogin;
                 tfLogin.clear();
             }
+            else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Не заполнено обязательное поле!");
+                alert.showAndWait();
+            }
         }
 
         else if (event.getSource() == changePasswordButton){
-            if(!tfName.equals("")){
+            if(!tfName.getText().equals("")){
                 updateUser("password", tfPass);
+            } else{
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Не заполнено обязательное поле!");
+                alert.showAndWait();
             }
         }
 
         else if (event.getSource() == addLawButton){
-            insertLaw();
+            if (!tfLoginNewUser.getText().equals("") && !tfIdPhrase.getText().equals(""))
+                insertLaw();
+            else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Не заполнены обязательные поля!");
+                alert.showAndWait();
+            }
         }
     }
 
-    public void updateUser(String column, TextField tf){
-        String query = "UPDATE Users SET " + column + "='" + tf.getText() + "' WHERE login ='" + actualLogin + "'";
-        executeQuery(query);
-
+    public void updateUser(String column, TextField tf) throws SQLException{
+        String query = "UPDATE Users SET " + column + "=? WHERE login =?";
+        parametrExecute(query, tf, actualLogin);
     }
 
     public void insertLaw() throws SQLException{
-        String query = "INSERT INTO Laws(user_id, phrase_id) VALUES('" + tfLoginNewUser.getText() + "','" + tfIdPhrase.getText() + "')";
-//        PreparedStatement st = connection.prepareStatement("INSERT INTO Laws(user_id, phrase_id) VALUES(?,?)");
-//        st.setString(1, tfLogin.getText());
-//        st.setString(   2, tfIdPhrase.getText());
-//        st.executeUpdate();
-
-
-
-        executeQuery(query);
+        String query = "INSERT INTO Laws(user_id, phrase_id) VALUES (?,?)";
+        parametrExecute(query, tfLoginNewUser, tfIdPhrase);
     }
 
-    private void executeQuery(String query) {
+    private void parametrExecute(String query, TextField tf, String value) throws SQLException{
         Connection conn = getConnect();
-        PreparedStatement st;
-        try {
-            st = conn.prepareStatement(query);
-            st.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        PreparedStatement pr = conn.prepareStatement(query);
+        pr.setString(1, tf.getText());
+        pr.setString(2, value);
+
+        pr.executeUpdate();
+    }
+
+    private void parametrExecute(String query, TextField user, TextField phrase) throws SQLException{
+        Connection conn = getConnect();
+        PreparedStatement pr = conn.prepareStatement(query);
+        pr.setInt(1, Integer.parseInt(user.getText()));
+        pr.setInt(2, Integer.parseInt(phrase.getText()));
+
+        pr.executeUpdate();
     }
 
     private void getCounterValue() throws Exception{ // способ 1.2
@@ -151,7 +180,6 @@ public class ProfilePageController extends Connect{
         try {
             Connection conn = getConnect();
             PreparedStatement st = connection.prepareStatement("SELECT * FROM Phrases WHERE author_id =?");
-//            String query = "SELECT * FROM Phrases WHERE author_id ='" + actualId + "'";
             st.setInt(1, actualId);
             int freeCount = 0;
             ResultSet res = st.executeQuery();

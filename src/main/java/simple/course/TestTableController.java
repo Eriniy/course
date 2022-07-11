@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import org.w3c.dom.Text;
 
 import javax.xml.stream.events.StartElement;
 import java.net.URL;
@@ -66,9 +67,6 @@ public class TestTableController extends Connect{
     @FXML
     private TableColumn<Phrase, String> textColumn;
 
-//    @FXML
-//    private TextField tfAuthor_id;
-
     @FXML
     private TextField tfDate;
 
@@ -84,9 +82,6 @@ public class TestTableController extends Connect{
     @FXML
     private TextField tfText;
 
-//    @FXML
-//    private TextArea tfTextArea;
-
     @FXML
     private Button updateButton;
 
@@ -94,60 +89,96 @@ public class TestTableController extends Connect{
     private Label actualUser;
 
     @FXML
-    void handleButtonAction(ActionEvent event) throws Exception{
+    void handleButtonAction(ActionEvent event) throws Exception {
         if (event.getSource() == insertButton) {
-            insertRecord();
-            tfLesson.clear();
-            tfTeacher.clear();
-            tfText.clear();
-            tfDate.clear();
-
-        } else if (event.getSource() == updateButton) {
-            String checkSuper = "SELECT superUser from Users where id ='" + actualId + "'";
-            String checkAuthor = "SELECT author_id from Phrases where id='" + actualId + "'";
-            String checkTableLaws = "SELECT user_id FROM Laws WHERE phrase_id ='" + tfId.getText() + "'";
-            String checkVerifier = "SELECT a.verifier_id FROM VerifierUsers as a where a.user_id IN (SELECT Phrases.author_id from Phrases where Phrases.id ='" + tfId.getText() + "')";
-
-            if (getValue(checkSuper, "superUser") == 1){
-                updateRecord();
-
-            } else if (getValue(checkAuthor, "author_id") == actualId) {
-                updateRecord();
-
-            } else if (getValue(checkTableLaws, "user_id") == actualId){
-                updateRecord();
-
-            } else if (checkVelifier(checkVerifier)){
-                updateRecord();
-
-            } else {
-                tfId.clear();
+            if(!tfText.getText().equals("") && !tfDate.getText().equals("") && !tfTeacher.getText().equals("") && !tfLesson.getText().equals("")){
+                insertRecord();
                 tfLesson.clear();
                 tfTeacher.clear();
                 tfText.clear();
                 tfDate.clear();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Не заполнены обязательные поля!");
+                alert.showAndWait();
             }
+
+
+        } else if (event.getSource() == updateButton) {
+            String checkSuper = "SELECT superUser from Users where id = ?";
+            String checkAuthor = "SELECT author_id from Phrases where id=?";
+            String checkTableLaws = "SELECT user_id FROM Laws WHERE phrase_id =?";
+            String checkVerifier = "SELECT a.verifier_id FROM VerifierUsers as a where a.user_id IN (SELECT Phrases.author_id from Phrases where Phrases.id =?)";
+            if (!tfText.getText().equals("") && !tfDate.getText().equals("") && !tfTeacher.getText().equals("") && !tfLesson.getText().equals("") && !tfId.getText().equals("")){
+                if (getValue(checkSuper, "superUser", actualId) == 1){
+                    updateRecord();
+
+                } else if (getValue(checkAuthor, "author_id", tfId) == actualId) {
+                    updateRecord();
+
+                } else if (getValue(checkTableLaws, "user_id", tfId) == actualId){
+                    updateRecord();
+
+                } else if (checkVelifier(checkVerifier, tfId)){
+                    updateRecord();
+
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Недостаточно прав!");
+                    alert.showAndWait();
+
+                    tfId.clear();
+                    tfLesson.clear();
+                    tfTeacher.clear();
+                    tfText.clear();
+                    tfDate.clear();
+                }
+            } else{
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Не заполнены обязательные поля!");
+                alert.showAndWait();
+            }
+
 
         } else if (event.getSource() == deleteButton) {
-            String checkSuper = "SELECT superUser from Users where id ='" + actualId + "'";
-            String checkAuthor = "SELECT author_id from Phrases where id='" + actualId + "'";
-            String checkVerifier = "SELECT a.verifier_id FROM VerifierUsers as a where a.user_id IN (SELECT Phrases.author_id from Phrases where Phrases.id ='" + tfId.getText() + "')";
+            String checkSuper = "SELECT superUser from Users where id =?";
+            String checkAuthor = "SELECT author_id from Phrases where id=?";
+            String checkVerifier = "SELECT a.verifier_id FROM VerifierUsers as a where a.user_id IN (SELECT Phrases.author_id from Phrases where Phrases.id =?)";
 
-
-            if (getValue(checkSuper, "superUser") == 1) {
-                deleteRecord();
-            } else if (getValue(checkAuthor, "author_id") == actualId) {
-                deleteRecord();
-            }  else if (checkVelifier(checkVerifier)){
-                deleteRecord();
+            if(!tfId.getText().equals("")){
+                if (getValue(checkSuper, "superUser", actualId) == 1) {
+                    deleteRecord();
+                } else if (getValue(checkAuthor, "author_id", tfId) == actualId) {
+                    deleteRecord();
+                } else if (checkVelifier(checkVerifier, tfId)){
+                    deleteRecord();
+                } else{
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Недостаточно прав!");
+                    alert.showAndWait();
+                }
+                tfId.clear();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Не заполнено обязательное поле!");
+                alert.showAndWait();
             }
-            tfId.clear();
 
         } else if (event.getSource() == profileButton){
             try {
                 profileButton.getScene().getWindow().hide(); // убирает прошлое окно
 
-                Parent root = FXMLLoader.load(getClass().getResource("profilePage.fxml"));// NEW PAGE
+                Parent root = FXMLLoader.load(getClass().getResource("profilePage.fxml"));
                 Scene scene = new Scene(root);
                 Stage stage = new Stage();
                 stage.setScene(scene);
@@ -208,37 +239,33 @@ public class TestTableController extends Connect{
         author_idColumn.setCellValueFactory(new PropertyValueFactory<Phrase, Integer>("author_id"));
 
         tablePhrases.setItems(list);
-//
     }
 
     private void insertRecord() {
         String insert = "INSERT INTO Phrases(text, date, teacher, lesson, author_id) VALUES (?,?,?,?,'" + actualId + "')";
-//        PreparedStatement pr =
         try {
-            testik(insert);
+            insertPhrase(insert);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-//        String query = "INSERT INTO Phrases(text, date, teacher, lesson, author_id) " +
-//                "VALUES ('" + tfText.getText() + "','" + tfDate.getText() + "','" + tfTeacher.getText() + "','" + tfLesson.getText() + "','" + actualId + "')";
-//        executeQuery(query);
         showPhrases();
     }
 
-    private void updateRecord() {
-        String query = "UPDATE Phrases SET text = '" + tfText.getText() + "', date = '" + tfDate.getText() + "', teacher = '" + tfTeacher.getText() + "', lesson = '" + tfLesson.getText() + "' WHERE id = " + tfId.getText();
-        executeQuery(query);
+    private void updateRecord() throws SQLException {
+        String query = "UPDATE Phrases SET text =?, date =?, teacher =?, lesson =? WHERE id =? ";
+        updatePhrase(query);
+
         showPhrases();
     }
 
-    private void deleteRecord() {
-        String query = "DELETE FROM Phrases WHERE id =" + tfId.getText() + "";
-        executeQuery(query);
+    private void deleteRecord() throws SQLException {
+        String query = "DELETE FROM Phrases WHERE id =?";
+        deletePhrase(query);
+
         showPhrases();
     }
 
-    private void testik(String in) throws SQLException{
+    private void insertPhrase(String in) throws SQLException{
         Connection conn = getConnect();
         PreparedStatement pr = conn.prepareStatement(in);
         pr.setString(1, tfText.getText());
@@ -247,37 +274,61 @@ public class TestTableController extends Connect{
         pr.setString(4, tfLesson.getText());
 
         pr.executeUpdate();
-
     }
 
-    private void executeQuery(String query) {
+    private void updatePhrase(String in) throws SQLException{
         Connection conn = getConnect();
-        Statement st;
-        try {
-            st = conn.createStatement();
-            st.executeUpdate(query);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        PreparedStatement pr = conn.prepareStatement(in);
+        pr.setString(1, tfText.getText());
+        pr.setString(2, tfDate.getText());
+        pr.setString(3, tfTeacher.getText());
+        pr.setString(4, tfLesson.getText());
+        pr.setInt(5, Integer.parseInt(tfId.getText()));
+
+        pr.executeUpdate();
     }
 
-    private int getValue(String query, String column) throws Exception{
+    private void deletePhrase(String in) throws SQLException{
         Connection conn = getConnect();
-        Statement st = conn.createStatement();
+        PreparedStatement pr = conn.prepareStatement(in);
+        pr.setInt(1, Integer.parseInt(tfId.getText()));
+
+        pr.executeUpdate();
+    }
+
+    private int getValue(String query, String column, TextField tf) throws SQLException{
+        Connection conn = getConnect();
+        PreparedStatement pr = conn.prepareStatement(query);
+        pr.setString(1, tf.getText());
         int count = 0;
 
-        ResultSet result = st.executeQuery(query);
+        ResultSet result = pr.executeQuery();
+
         if (result.next())
             count = result.getInt(column);
-
 
         return count;
     }
 
-    private boolean checkVelifier(String query) throws Exception{
+    private int getValue(String query, String column, int value) throws SQLException{
         Connection conn = getConnect();
-        Statement st = conn.createStatement();
-        ResultSet result = st.executeQuery(query);
+        PreparedStatement pr = conn.prepareStatement(query);
+        pr.setInt(1, value);
+        int count = 0;
+
+        ResultSet result = pr.executeQuery();
+
+        if (result.next())
+            count = result.getInt(column);
+
+        return count;
+    }
+
+    private boolean checkVelifier(String query, TextField tf) throws Exception{
+        Connection conn = getConnect();
+        PreparedStatement pr = conn.prepareStatement(query);
+        pr.setInt(1, Integer.parseInt(tf.getText()));
+        ResultSet result = pr.executeQuery();
         int idUserControlled = 0;
 
         while(result.next()){
@@ -285,7 +336,6 @@ public class TestTableController extends Connect{
             if (idUserControlled == actualId)
                 return true;
         }
-
 
         return false;
     }

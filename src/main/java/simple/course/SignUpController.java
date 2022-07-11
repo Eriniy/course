@@ -6,13 +6,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
 
@@ -27,6 +31,9 @@ public class SignUpController extends Connect{
     private Button signUpButton;
 
     @FXML
+    private PasswordField tfPass;
+
+    @FXML
     private Button returnButton;
 
     @FXML
@@ -34,9 +41,6 @@ public class SignUpController extends Connect{
 
     @FXML
     private TextField tfName;
-
-    @FXML
-    private TextField tfPass;
 
     @FXML
     void handleButtonAction(ActionEvent event) {
@@ -47,10 +51,7 @@ public class SignUpController extends Connect{
 
             if (!login.equals("") && !password.equals("") && !name.equals("")){
                 try {
-                    String query = "INSERT INTO Users(name, login, password) " +
-                            "VALUES ('" + name + "','" + login + "','" + password + "')";
-
-                    executeQuery(query);
+                    parameterExecute();
 
                     signUpButton.getScene().getWindow().hide(); // убирает прошлое окно
 
@@ -62,9 +63,12 @@ public class SignUpController extends Connect{
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-            }
-            else {
-                System.out.println("Не все обязатльные поля заполены!");
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Не заполнены обязательные поля!");
+                alert.showAndWait();
             }
         }else if(event.getSource() == returnButton){
             try {
@@ -81,15 +85,15 @@ public class SignUpController extends Connect{
         }
     }
 
-    private void executeQuery(String query) {
+    private void parameterExecute() throws SQLException {
         Connection conn = getConnect();
-        Statement st;
-        try {
-            st = conn.createStatement();
-            st.executeUpdate(query);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        String in = "INSERT INTO Users(name, login, password) VALUES (?,?,?)";
+        PreparedStatement pr = conn.prepareStatement(in);
+        pr.setString(1, tfName.getText());
+        pr.setString(2, tfLogin.getText());
+        pr.setString(3, tfPass.getText());
+
+        pr.executeUpdate();
     }
 
     @FXML

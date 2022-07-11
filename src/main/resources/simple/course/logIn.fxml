@@ -2,15 +2,14 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simple.course.LogInController">
    <children>
-      <TextField fx:id="tfLogLogin" layoutX="57.0" layoutY="108.0" prefHeight="41.0" prefWidth="285.0" />
-      <TextField fx:id="tfLogPassword" layoutX="57.0" layoutY="170.0" prefHeight="41.0" prefWidth="285.0" />
+      <TextField fx:id="tfLogLogin" layoutX="57.0" layoutY="89.0" prefHeight="41.0" prefWidth="285.0" promptText="логин" />
       <Label layoutX="97.0" layoutY="29.0" prefHeight="50.0" prefWidth="205.0" text="Авторизация" textAlignment="CENTER">
          <font>
             <Font size="34.0" />
@@ -21,5 +20,6 @@
             <Font size="25.0" />
          </font>
       </Button>
+      <PasswordField fx:id="psPassword" layoutX="57.0" layoutY="150.0" prefHeight="41.0" prefWidth="285.0" promptText="пароль" />
    </children>
 </AnchorPane>

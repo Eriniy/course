@@ -97,8 +97,7 @@ public class MainPageController extends Connect{
 
         try {
             st  = conn.prepareStatement(query);
-            rs = st.executeQuery()
-            ;
+            rs = st.executeQuery();
             Phrase phrase;
             while (rs.next()){
                 phrase = new Phrase(rs.getInt("id"), rs.getString("text"), rs.getString("date"), rs.getString("teacher"), rs.getString("lesson"), rs.getInt("author_id"));

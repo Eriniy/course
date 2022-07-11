@@ -5,7 +5,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -14,7 +16,7 @@ import java.sql.*;
 import java.util.ResourceBundle;
 
 public class LogInController extends Connect {
-    public String const_user;
+//    public String const_user;
 
     @FXML
     private ResourceBundle resources;
@@ -29,22 +31,18 @@ public class LogInController extends Connect {
     private TextField tfLogLogin;
 
     @FXML
-    private TextField tfLogPassword;
+    private PasswordField psPassword;
 
     @FXML
     void handleButtonAction(ActionEvent event) {
         if(event.getSource() == logInButton){
-            if(!tfLogLogin.equals("") && !tfLogPassword.equals("")){
+            if(!tfLogLogin.getText().equals("") && !psPassword.getText().equals("")){
                 try {
                     String check = "SELECT COUNT(*) as count FROM Users WHERE login=? AND password=?";
-                    String checkLogPass = "SELECT COUNT(*) as count FROM Users WHERE login='" + tfLogLogin.getText() + "' AND password = '" + tfLogPassword.getText() + "'";
-                    //чекаем на совпадение пары в бд
-//                    if (executeQuery(checkLogPass, "count") == 1){
-                    if (testik(check) == 1){
-                        User.actualLogin = tfLogLogin.getText(); // актуальный логин
-                        String lookId = "SELECT id FROM Users WHERE login='" + tfLogLogin.getText() + "'";
-                        User.actualId = executeQuery(lookId, "id"); // актуальный пароль
 
+                    if (getCheckPassLogin(check) == 1){ //чекаем на совпадение пары в бд
+                        User.actualLogin = tfLogLogin.getText(); // актуальный логин
+                        User.actualId = getActualId(); // актулаьный id
 
                         logInButton.getScene().getWindow().hide(); // убирает прошлое окно
 
@@ -55,45 +53,53 @@ public class LogInController extends Connect {
                         stage.show();
                     }
                     else {
-                        tfLogPassword.clear();
+                        psPassword.clear();
                     }
 
                 }catch (Exception e){
                     e.printStackTrace();
                 }
+            } else{
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Не заполнены обязательные поля!");
+                alert.showAndWait();
             }
         }
 
     }
 
-    private int executeQuery(String query, String column) throws Exception{
-        Connection conn = getConnect();
-        Statement st = conn.createStatement();
-        int count = 0;
-
-        ResultSet result = st.executeQuery(query);
-        if (result.next())
-            count = result.getInt(column);
-
-
-        return count;
-    }
-
-    private int testik(String str) throws SQLException {
+    private int getCheckPassLogin(String str) throws SQLException {
         Connection conn = getConnect();
         PreparedStatement pr = conn.prepareStatement(str);
         pr.setString(1, tfLogLogin.getText());
-        pr.setString(2, tfLogPassword.getText());
+        pr.setString(2, psPassword.getText());
         ResultSet resultSet = pr.executeQuery();
-        int i = 0;
+        int check = 0;
 
         if (resultSet.next()){
-            i = resultSet.getInt("count");
+            check = resultSet.getInt("count");
         }
 
-        return i;
+        return check;
 
-//        return pr.executeQuery();
+    }
+
+    private int getActualId() throws SQLException {
+        Connection conn = getConnect();
+        String str = "SELECT id FROM Users WHERE login=?";
+        PreparedStatement pr = conn.prepareStatement(str);
+        pr.setString(1, tfLogLogin.getText());
+
+        ResultSet resultSet = pr.executeQuery();
+        int actualId = 0;
+
+        if (resultSet.next()){
+            actualId = resultSet.getInt("id");
+        }
+
+        return actualId;
 
     }
 
