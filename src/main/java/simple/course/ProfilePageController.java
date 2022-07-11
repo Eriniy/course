@@ -10,10 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class ProfilePageController extends Connect{
 
@@ -59,7 +56,7 @@ public class ProfilePageController extends Connect{
     private TextField tfPass;
 
     @FXML
-    void handleButtonAction(ActionEvent event) {
+    void handleButtonAction(ActionEvent event) throws SQLException{
 //        actual_login.setText(const_user);
         if (event.getSource() == returnButton){
             try {
@@ -108,24 +105,31 @@ public class ProfilePageController extends Connect{
 
     }
 
-    public void insertLaw() {
+    public void insertLaw() throws SQLException{
         String query = "INSERT INTO Laws(user_id, phrase_id) VALUES('" + tfLoginNewUser.getText() + "','" + tfIdPhrase.getText() + "')";
+//        PreparedStatement st = connection.prepareStatement("INSERT INTO Laws(user_id, phrase_id) VALUES(?,?)");
+//        st.setString(1, tfLogin.getText());
+//        st.setString(   2, tfIdPhrase.getText());
+//        st.executeUpdate();
+
+
+
         executeQuery(query);
     }
 
     private void executeQuery(String query) {
         Connection conn = getConnect();
-        Statement st;
+        PreparedStatement st;
         try {
-            st = conn.createStatement();
-            st.executeUpdate(query);
+            st = conn.prepareStatement(query);
+            st.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void getCounterValue() throws Exception{ // способ 1.2
-        String countValue = "SELECT COUNT(*) as count FROM Phrases WHERE author_id='" + actualId + "'";
+        String countValue = "SELECT COUNT(*) as count FROM Phrases WHERE author_id=?";
         countPhrase = getValue(countValue, "count");
         counter.setText(Integer.toString(countPhrase));
 
@@ -133,23 +137,24 @@ public class ProfilePageController extends Connect{
 
     private int getValue(String query, String column) throws Exception{ // способ 1.1
         Connection conn = getConnect();
-        Statement st = conn.createStatement();
+        PreparedStatement st = conn.prepareStatement(query);
+        st.setInt(1, actualId);
         int count = 0;
 
-        ResultSet result = st.executeQuery(query);
-        if (result.next())
-            count = result.getInt(column);
+        ResultSet result = st.executeQuery();
+        result.next();
 
-        return count;
+        return result.getInt(1);
     }
 
     private void getCounterValue_2(){
         try {
             Connection conn = getConnect();
-            Statement st = conn.createStatement();
-            String query = "SELECT * FROM Phrases WHERE author_id ='" + actualId + "'";
+            PreparedStatement st = connection.prepareStatement("SELECT * FROM Phrases WHERE author_id =?");
+//            String query = "SELECT * FROM Phrases WHERE author_id ='" + actualId + "'";
+            st.setInt(1, actualId);
             int freeCount = 0;
-            ResultSet res = st.executeQuery(query);
+            ResultSet res = st.executeQuery();
 
             while(res.next()){
                 freeCount++;

@@ -37,7 +37,7 @@
             <Font size="15.0" />
          </font>
       </Button>
-      <Label fx:id="actual_login" layoutX="393.0" layoutY="83.0" prefHeight="51.0" prefWidth="113.0" text="Label" textAlignment="CENTER">
+      <Label fx:id="actual_login" layoutX="336.0" layoutY="83.0" prefHeight="51.0" prefWidth="214.0" text="Label" textAlignment="CENTER">
          <font>
             <Font size="35.0" />
          </font></Label>
@@ -46,7 +46,7 @@
             <Font size="27.0" />
          </font>
       </Label>
-      <Label fx:id="counter" layoutX="456.0" layoutY="147.0" prefHeight="39.0" prefWidth="51.0" text="Label">
+      <Label fx:id="counter" layoutX="456.0" layoutY="147.0" prefHeight="39.0" prefWidth="59.0" text="Label">
          <font>
             <Font size="27.0" />
          </font>
